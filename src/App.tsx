@@ -8,6 +8,7 @@ import QubitModule from './components/QubitModule';
 import AIModule from './components/AIModule';
 import RealCapabilitiesModule from './components/RealCapabilitiesModule';
 import DemoModule from './components/DemoModule';
+import ValidationModule from './components/ValidationModule';
 import MatrixRain from './components/MatrixRain';
 import StatusPanel from './components/StatusPanel';
 import { factorize, measureFactorization } from './engines/shorEngine';
@@ -147,6 +148,7 @@ function App() {
         <nav className="flex flex-wrap justify-center gap-2 p-4 border-b border-cyan-900/30">
           {[
             { id: 'overview', label: '⬡ VUE GLOBALE' },
+            { id: 'validation', label: '🧪 VALIDATION T1-T5' },
             { id: 'demo', label: '▶ DÉMONSTRATIONS' },
             { id: 'capabilities', label: '⚡ CAPACITÉS RÉELLES' },
             { id: 'shor', label: '⟨ψ| SHOR' },
@@ -305,6 +307,7 @@ function App() {
             </div>
           )}
 
+          {activeModule === 'validation' && <ValidationModule />}
           {activeModule === 'demo' && <DemoModule />}
           {activeModule === 'capabilities' && <RealCapabilitiesModule />}
           {activeModule === 'shor' && <ShorModule />}
