@@ -1,4 +1,5 @@
 """Executable validation suite for CAHOS T1-T5."""
+import base64
 import hashlib
 import tempfile
 import unittest
@@ -26,19 +27,20 @@ class TestT1Caesar(unittest.TestCase):
         self.assertEqual(caesar_decrypt("VHFUHW", 3), "SECRET")
         self.assertEqual(caesar_decrypt("Khoor, Zruog!", 3), "Hello, World!")
 
-    def test_shift_wraparound_and_validation(self):
+    def test_shift_wraparound(self):
         self.assertEqual(caesar_decrypt("ABC", 29), "XYZ")
 
 
 class TestT2Xor(unittest.TestCase):
     def test_repeating_xor_round_trip(self):
         plaintext = b"the secret message"
-        ciphertext = xor_bytes(plaintext, b"\\x42")
-        self.assertEqual(xor_bytes(ciphertext, b"\\x42"), plaintext)
+        key = bytes([0x42])
+        ciphertext = xor_bytes(plaintext, key)
+        self.assertEqual(xor_bytes(ciphertext, key), plaintext)
 
     def test_single_byte_analysis_recovers_demo_key(self):
         plaintext = b" this is the secret message and the answer is known "
-        ciphertext = xor_bytes(plaintext, b"\\x42")
+        ciphertext = xor_bytes(plaintext, bytes([0x42]))
         results = xor_analyze_single_byte(ciphertext, top_n=5)
         self.assertIn(0x42, [int(item["key"]) for item in results])
 
@@ -82,7 +84,6 @@ class TestT4AesGcm(unittest.TestCase):
     def test_tampering_is_detected(self):
         key = bytes(range(32))
         envelope = aes256_gcm_encrypt(b"message", key)
-        import base64
         raw = bytearray(base64.b64decode(envelope["ciphertext_b64"]))
         raw[0] ^= 1
         envelope["ciphertext_b64"] = base64.b64encode(raw).decode("ascii")
